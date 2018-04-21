@@ -1,5 +1,4 @@
 const MongoClient = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectID;
 
 let connectToDb = function () {
     return new Promise((res, rej) => {
@@ -7,38 +6,31 @@ let connectToDb = function () {
             if (!err) {
                 console.log("Connected to DataBase");
                 res(db.collection("plc"));
-
-                // getOnePLC(collection, {_id: ObjectId("5accf1ed06f49620cc87ad9b")});
-                // getAllPlcs(collection);
-                // Search for plc with 4 x DI and DO
-                // getPLCsWithCriteria(collection, {DI: 4, DO: 4})
             }
             else {
+                rej(err);
                 throw err;
             }
         })
     });
 };
 
-// po ID {_id: ObjectId("5accf1ed06f49620cc87ad9b")}
-
 let getOnePLC = function getOnePLC(id) {
-    return new Promise((response, rej) => {
+    return new Promise((response, reject) => {
         connectToDb().then(db => {
             db.findOne(id).then((res, rej) => {
                 if (res) {
                     response(res);
                 }
                 if (rej) {
-                    console.log(rej)
+                    reject(rej)
                 }
             })
         })
     });
-}
+};
 
 function getAllPlcs(collection) {
-
     collection.find().toArray().then((res, rej) => {
         if (res) {
             console.log(res)
@@ -50,7 +42,6 @@ function getAllPlcs(collection) {
 }
 
 function getPLCsWithCriteria(collection, criteria) {
-
     collection.find(criteria).toArray().then((res, rej) => {
         if (res) {
             console.log(res)
@@ -65,4 +56,4 @@ function getPLCsWithCriteria(collection, criteria) {
 
 module.exports = {
     getOnePLC
-}
+};

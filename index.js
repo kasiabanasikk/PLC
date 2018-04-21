@@ -1,12 +1,12 @@
-const express = require('express')
+const express = require('express');
 const http = require('http');
 const app = express();
 
-const port = 3000
-//initialize a simple http server
+const port = 3000;
+
 const server = http.createServer(app);
 
-app.get('/', function (req, res, next) {
+app.get('/', function (req, res) {
     setTimeout(
         () => res.status(200).send('I am working!'), 3000
     );
