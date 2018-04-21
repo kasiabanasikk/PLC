@@ -1,7 +1,7 @@
 const ObjectId = require('mongoose').Types.ObjectId;
 const Driver = require('./driver.js');
 
-let getOnePLC = function getOnePLC(criteria) {
+let getDriver = function getOnePLC(criteria) {
     return new Promise((response, reject) => {
         return Driver.find(criteria).exec(function (err, driver) {
             if (err) {
@@ -14,7 +14,7 @@ let getOnePLC = function getOnePLC(criteria) {
 };
 
 
-function getAllPlcs() {
+function getDriverList() {
     return new Promise((response, reject) => {
         return Driver.find().exec(function (err, drivers) {
             if (err) {
@@ -27,17 +27,17 @@ function getAllPlcs() {
 }
 
 function test() {
-    getOnePLC({_id: ObjectId("5accf1ed06f49620cc87ad9b")}).then((driver) => {
+    getDriver({_id: ObjectId("5accf1ed06f49620cc87ad9b")}).then((driver) => {
         console.log(driver)
     });
 
-    // getAllPlcs().then((drivers)=>{
+    // getDriverList().then((drivers)=>{
     //     drivers.map((driver) => {
     //         console.log(driver);
     //     });
     // });
 
-    // getOnePLC({DI: 4}).then((driver) => {
+    // getDriver({DI: 4}).then((driver) => {
     //     console.log(driver)
     // });
 }
