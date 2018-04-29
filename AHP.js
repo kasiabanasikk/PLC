@@ -13,7 +13,6 @@ let getDriver = function getOnePLC(criteria) {
     });
 };
 
-
 function getDriverList() {
     return new Promise((response, reject) => {
         return Driver.find().exec(function (err, drivers) {
@@ -26,22 +25,6 @@ function getDriverList() {
     });
 }
 
-function test() {
-    getDriver({_id: ObjectId("5accf1ed06f49620cc87ad9b")}).then((driver) => {
-        console.log(driver)
-    });
-
-    // getDriverList().then((drivers)=>{
-    //     drivers.map((driver) => {
-    //         console.log(driver);
-    //     });
-    // });
-
-    // getDriver({DI: 4}).then((driver) => {
-    //     console.log(driver)
-    // });
-}
-
 module.exports = {
-    testGetOnePlc: test
+    getDrivers: getDriverList
 };

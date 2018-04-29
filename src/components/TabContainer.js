@@ -8,27 +8,49 @@ const styles = {
         fontSize: 24,
         paddingTop: 16,
         marginBottom: 12,
-        fontWeight: 400,
+        fontWeight: 400
     },
     slide: {
-        padding: 10,
+        padding: 10
     },
 };
 
 class TabContainer extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            slideIndex: 0,
+            drivers: []
+        };
+    }
+
+    static async fetchDrivers() {
+        const response = await fetch('/driver');
+        return await response.json();
+    }
+
+    static uniqBy(drivers, property) {
+        return drivers.filter((driver, index, self) =>
+            index === self.findIndex((other) => (other[property] === driver[property]
+            ))
+        );
+    }
+
+    componentDidMount() {
+        let that = this;
+        TabContainer.fetchDrivers().then(response => {
+            let uniqueArray = TabContainer.uniqBy(response, "screen");
+            console.log(uniqueArray);
+            that.setState({drivers: uniqueArray});
+        });
+    }
 
     handleChange = (value) => {
         this.setState({
             slideIndex: value,
         });
     };
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            slideIndex: 0,
-        };
-    }
 
     render() {
         return (
@@ -50,8 +72,8 @@ class TabContainer extends React.Component {
                     onChangeIndex={this.handleChange}
                 >
                     <div>
-                        <h2 style={styles.headline}>Price filter</h2>
-                        <DriverFilter hint="screen"/>
+                        <h2 style={styles.headline}>screen filter</h2>
+                        <DriverFilter hint="screen" drivers={this.state.drivers}/>
                     </div>
                     <div style={styles.slide}>
                         slide n°2

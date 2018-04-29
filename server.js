@@ -1,27 +1,17 @@
-require('babel-register');
-require('./server.babel');
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require("body-parser");
+const routes = require("./routes/routes.js");
 
-// const express = require('express');
-// const http = require('http');
-// const app = express();
-// const mongoose = require('mongoose');
-// const AHP = require('./AHP.js');
+const app = express();
 
-// const port = 3000;
-//
-// const server = http.createServer(app);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
-// app.get('/', function (req, res) {
-//     setTimeout(
-//         () => res.status(200).send('I am working!'), 3000
-//     );
-// });
-//
-// //start our server
-// server.listen(port || 8999, () => {
-//     console.log(`Server started on port ${server.address().port} :)`);
-//
-//     mongoose.connect("mongodb://localhost:27017/plcControllers");
-//
-//     AHP.testGetOnePlc();
-// });
+routes(app);
+
+app.use('/', express.static('public'));
+
+app.listen(process.env.PORT || 3000);
+
+mongoose.connect("mongodb://localhost:27017/plcControllers");

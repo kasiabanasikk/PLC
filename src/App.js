@@ -4,6 +4,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import TabContainer from "./components/TabContainer";
+import FilterContainer from "./components/FilterContainer";
 
 class App extends Component {
     constructor(props) {
