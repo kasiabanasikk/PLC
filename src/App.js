@@ -62,16 +62,15 @@ class App extends Component {
         let filtered = [...this.state.drivers];
         let x = filtered.map(filter => filter._id);
         this.state.filterArray.forEach(filter => {
-            filter.values.forEach(value => {
+            filter.values.forEach(propertyValue => {
                 filtered = filtered.filter(driver => {
-                    return driver[filter.prop] === value;
+                    return filter.values.includes(driver[filter.prop]);
                 });
 
                 x = filtered.map(filter => filter._id);
             })
         });
 
-        console.log(JSON.stringify(x));
         return x;
     }
 
