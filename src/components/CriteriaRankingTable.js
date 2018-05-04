@@ -71,7 +71,6 @@ class CriteriaRankingTable extends React.Component {
             cachedInputs: caches
         });
 
-        console.log(caches);
     };
 
 
