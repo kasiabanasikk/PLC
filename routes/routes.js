@@ -55,14 +55,10 @@ const appRouter = function (app) {
                 }
             }
 
-            // console.log(criterion, matrix);
-            // console.log('--------------------------------------------------------------------------------------------');
             rankCriteriaItems.push({
                 criterion: criterion,
                 matrix: matrix
             });
-
-            // rankCriteria
 
             JSON.parse(req.body.criteriaRankingArray.toString()).forEach((newCriterion) => {
                 rankCriteria.forEach((criterion) => {
