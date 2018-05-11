@@ -22,6 +22,7 @@ const styles = theme => ({
         width: '100%',
         marginTop: theme.spacing.unit * 3,
         overflowX: 'auto',
+        height: '100%'
     },
     table: {
         minWidth: 700,
@@ -36,13 +37,13 @@ const styles = theme => ({
     }
 });
 
+const driverProperties = ['screen', 'DI', 'DO', 'AI', 'AO', 'price'];
 
 class CriteriaRankingTable extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            values: this.props.values,
             cachedInputs: []
         };
 
@@ -50,13 +51,34 @@ class CriteriaRankingTable extends React.Component {
         this.getCachedValue = this.getCachedValue.bind(this);
     }
 
+    static reverseKey(key) {
+        return key.split("/").reverse().join("/");
+    };
+
     onCacheChange(event) {
         let caches = [...this.state.cachedInputs];
         let key = event.target.id;
         let value = event.target.value;
+
         caches.forEach(dataObject => {
             if (dataObject.key === key) {
                 dataObject.value = value;
+                let reverseKey = CriteriaRankingTable.reverseKey(key);
+                let includesReverse = caches.filter(cache => cache.key === reverseKey).length;
+
+                if (includesReverse < 1) {
+                    caches.push({
+                        key: reverseKey,
+                        value: 1 / value,
+                    })
+                } else {
+                    caches.forEach(cache => {
+                        if (cache.key === reverseKey) {
+                            console.log("update reverse");
+                            cache.value = 1 / value;
+                        }
+                    });
+                }
             }
         });
 
@@ -64,13 +86,31 @@ class CriteriaRankingTable extends React.Component {
             caches.push({
                 key: key,
                 value: value,
-            })
+            });
+
+            let reverseKey = CriteriaRankingTable.reverseKey(key);
+            let reverseIndex = caches.indexOf(cache => cache.key === reverseKey);
+
+            if (reverseIndex === -1) {
+                caches.push({
+                    key: reverseKey,
+                    value: 1 / value,
+                })
+            } else {
+                caches.forEach(cache => {
+                    if (cache.key === reverseKey) {
+                        console.log("update reverse");
+                        cache.value = 1 / value;
+                    }
+                });
+            }
         }
 
         this.setState({
             cachedInputs: caches
         });
 
+        this.props.setCache(caches);
     };
 
 
@@ -94,20 +134,20 @@ class CriteriaRankingTable extends React.Component {
                         <TableRow>
                             <CustomTableCell>X</CustomTableCell>
                             {
-                                this.state.values.map((value) => {
+                                driverProperties.map((driverProperty) => {
                                     return (
-                                        <CustomTableCell>{value}</CustomTableCell>
+                                        <CustomTableCell>{driverProperty}</CustomTableCell>
                                     );
                                 })}
                         </TableRow>
-                        {this.props.values.map((horizontalValue) => {
+                        {driverProperties.map((horizontalValue) => {
                             return (
                                 <TableRow>
                                     <CustomTableCell> {horizontalValue}
                                     </CustomTableCell>
                                     {
-                                        this.props.values.map((verticalValue) => {
-                                            let inputId = this.props.driverProperty + "/" + horizontalValue + "/" + verticalValue;
+                                        driverProperties.map((verticalValue) => {
+                                            let inputId = horizontalValue + "/" + verticalValue;
 
                                             return (
                                                 <CustomTableCell>

@@ -19,10 +19,10 @@ const styles = theme => ({
     },
     chips: {
         display: 'inline',
-        flexWrap: 'wrap',
+        flexWrap: 'wrap'
     },
     chip: {
-        margin: theme.spacing.unit / 4,
+        margin: theme.spacing.unit / 4
     },
 });
 
@@ -33,6 +33,7 @@ const MenuProps = {
         style: {
             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
             width: 250,
+            height: "100%"
         },
     },
 };

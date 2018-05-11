@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import './App.css';
 import DriverFilter from "./components/DriverFilter";
-import StepperComponent from "./components/StepperComponent";
 import ApplicationBar from "./components/ApplicationBar";
+import CriteriaRankingTable from "./components/CriteriaRankingTable";
+import Button from "material-ui/es/Button/Button";
+import ResultsTable from "./components/ResultsTable";
 
 class App extends Component {
 
@@ -12,10 +14,15 @@ class App extends Component {
         this.state = {
             drivers: [],
             matchFilter: [],
-            filterArray: []
+            filterArray: [],
+            cache: [],
+            rankedScoreMap: []
         };
 
         this.filterChange = this.filterChange.bind(this);
+        App.runAlgorithm = App.runAlgorithm.bind(this);
+        this.setCache = this.setCache.bind(this);
+        this.startComputation = this.startComputation.bind(this);
     }
 
     static async fetchDrivers() {
@@ -23,12 +30,47 @@ class App extends Component {
         return await response.json();
     }
 
+    static async runAlgorithm(criteriaRankingArray) {
+        let bodyData = criteriaRankingArray.length === 0 ? "nothing" : JSON.stringify(criteriaRankingArray);
+        let drivers = JSON.stringify(this.state.matchFilter);
+        const response = await fetch('/run', {
+            method: 'post',
+            body: JSON.stringify({
+                drivers: drivers,
+                criteriaRankingArray: bodyData,
+            }),
+            headers: {
+                'content-type': 'application/json'
+            },
+
+        });
+
+        let responseObject = await response.json().then(responseObject => {
+            this.setState({
+                rankedScoreMap: responseObject.criteriaRankingArray.rankedScoreMap
+            });
+        });
+
+        return await responseObject;
+    }
+
+    startComputation() {
+        App.runAlgorithm(this.state.cache).then(() => {
+        });
+    }
+
+    setCache(array) {
+        this.setState({
+            cache: array
+        });
+    }
+
     componentDidMount() {
         let that = this;
         App.fetchDrivers().then(response => {
             that.setState({
                 drivers: response,
-                matchFilter: response.map(driver => driver)
+                matchFilter: response
             });
         });
     }
@@ -51,29 +93,43 @@ class App extends Component {
             Object.assign(filters[index], {values: array});
         }
 
+        for (let i = 0; i < filters.length; i++) {
+            if (filters[i].values.length === 0) {
+                filters.splice(i, 1);
+            }
+        }
+
         this.setState({
             filterArray: filters
         }, () => {
-            this.setState({
-                matchFilter: this.matchFilter()
-            });
+            if (filters.length === 0) {
+                this.setState({
+                    matchFilter: this.state.drivers
+                });
+
+            } else {
+                this.setState({
+                    matchFilter: this.matchFilter()
+                });
+            }
         });
     }
 
     matchFilter() {
-        let filtered = [...this.state.drivers];
-        let x = filtered.map(filter => filter._id);
+        let filteredDrivers = [...this.state.drivers];
+        let drivers = [];
         this.state.filterArray.forEach(filter => {
             filter.values.forEach(() => {
-                filtered = filtered.filter(driver => {
+                filteredDrivers = filteredDrivers.filter(driver => {
+                    // / filter,prop can be "screen"
                     return filter.values.includes(driver[filter.prop]);
                 });
 
-                x = filtered.map(filter => filter);
+                drivers = [...filteredDrivers];
             })
         });
 
-        return x;
+        return drivers;
     }
 
     render() {
@@ -88,7 +144,7 @@ class App extends Component {
         return (
             <div className="App">
                 <ApplicationBar title="PLC"/>
-                <div>
+                <div className="FilterPane">
                     <DriverFilter filterChange={this.filterChange} className="DriverFilter"
                                   labelValue="Screen Size"
                                   drivers={this.state.drivers}
@@ -119,8 +175,15 @@ class App extends Component {
                                   inputId={"price"} driverProperty={"price"}/>
                 </div>
                 <div>
-                    <StepperComponent drivers={this.state.matchFilter}/>
+                    <CriteriaRankingTable setCache={this.setCache}/>
                 </div>
+                <div>
+                    <Button onClick={this.startComputation}>Run</Button>
+                </div>
+                <div>
+                    <ResultsTable rankedScoreMap={this.state.rankedScoreMap}/>
+                </div>
+
             </div>
         );
     }
